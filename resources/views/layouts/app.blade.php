@@ -160,13 +160,13 @@
                                         Dashboard
                                     </a>
                                 </li>
-                                {{-- <li class="nav-item">
+                                <li class="nav-item">
                                     <a class="nav-link {{ Request::is('absens*') ? 'active' : '' }}" 
                                        href="{{ route('absens.index') }}">
                                         <i class="ri-calendar-check-line me-1"></i>
                                         Absensi
                                     </a>
-                                </li> --}}
+                                </li>
                                 <li class="nav-item">
                                     <a class="nav-link {{ Request::is('laporans*') ? 'active' : '' }}" 
                                        href="{{ route('laporans.index') }}">
@@ -174,6 +174,36 @@
                                         Laporan
                                     </a>
                                 </li>
+                                @if(Auth::user()->suratBalasan)
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle {{ Request::is('surat*') ? 'active' : '' }}" 
+                                       href="#" 
+                                       id="suratDropdown" 
+                                       role="button" 
+                                       data-bs-toggle="dropdown">
+                                        <i class="ri-file-paper-2-line me-1"></i>
+                                        Surat Balasan
+                                    </a>
+                                    <ul class="dropdown-menu border-0 shadow-sm">
+                                        <li>
+                                            <a class="dropdown-item" 
+                                               href="{{ Storage::url(Auth::user()->suratBalasan->surat) }}" 
+                                               target="_blank">
+                                                <i class="ri-eye-line me-2"></i>
+                                                Preview Surat
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" 
+                                               href="{{ Storage::url(Auth::user()->suratBalasan->surat) }}" 
+                                               download="Surat_Balasan_{{ Auth::user()->name }}.pdf">
+                                                <i class="ri-download-line me-2"></i>
+                                                Download Surat
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                @endif
                             @endrole
                         </ul>
 

@@ -184,4 +184,33 @@ class MasterController extends Controller
         return view('admin.suratselesai.index', compact('laporans'));
     }
 
+    public function rejectUser(Request $request, $id)
+    {
+        try {
+            $user = User::findOrFail($id);
+            
+            // Validasi alasan penolakan
+            $request->validate([
+                'alasan_penolakan' => 'required|string|max:255'
+            ]);
+
+            // Format nomor WhatsApp dan buat template pesan
+            $waNumber = preg_replace('/^0/', '62', $user->no_tlpn);
+            $message = "Halo {$user->name}, mohon maaf verifikasi akun SIPEKA Anda ditolak.\n\n"
+                    . "Alasan: {$request->alasan_penolakan}\n\n"
+                    . "Silahkan perbaiki dokumen Anda dan daftar kembali. Terima kasih.";
+            
+            // Redirect ke WhatsApp dengan pesan template
+            $waUrl = "https://api.whatsapp.com/send?phone={$waNumber}&text=" . urlencode($message);
+            
+            // Hapus user
+            $user->delete();
+
+            return redirect()->away($waUrl);
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan saat menolak verifikasi: ' . $e->getMessage());
+        }
+    }
 }

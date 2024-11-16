@@ -57,6 +57,7 @@ Route::middleware('auth')->group(function () {
         // Verifikasi User
         Route::get('/verify-users', [AdminMasterController::class, 'verifyUsersIndex'])->name('verify.users');
         Route::post('/verify-user/{user}', [VerifyUserController::class, 'verify'])->name('verify.user');
+        Route::post('/verify-user/{id}/reject', [AdminMasterController::class, 'rejectUser'])->name('verify.user.reject');
 
         // Surat Balasan
         Route::get('/surat-balasans', [AdminMasterController::class, 'suratBalasansIndex'])->name('surat_balasans.index');

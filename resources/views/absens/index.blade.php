@@ -192,8 +192,8 @@
     @if(session('success'))
         Swal.fire({
             icon: 'success',
-            title: '{{ session('success')['title'] }}',
-            text: '{{ session('success')['message'] }}',
+            title: 'Success',
+            text: 'Berhasil Login',
             showConfirmButton: false,
             timer: 1500,
             toast: true,

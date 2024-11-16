@@ -116,14 +116,24 @@
                                                     
                                                     @if($user->suratBalasan)
                                                         <form action="{{ route('admin.verify.user', $user->id) }}"
-                                                            method="POST" class="d-inline verify-form">
+                                                            method="POST" class="d-inline">
                                                             @csrf
-                                                            <button type="submit" class="btn btn-success btn-sm">
+                                                            <button type="submit" 
+                                                                    class="btn btn-success btn-sm"
+                                                                    onclick="return confirm('Apakah Anda yakin ingin memverifikasi mahasiswa ini?')">
                                                                 <i class="ri-check-line me-1"></i>
                                                                 Verifikasi
                                                             </button>
                                                         </form>
                                                     @endif
+
+                                                    <!-- Tombol Tolak -->
+                                                    <button type="button" 
+                                                            class="btn btn-danger btn-sm"
+                                                            onclick="showRejectModal('{{ $user->id }}')">
+                                                        <i class="ri-close-line me-1"></i>
+                                                        Tolak
+                                                    </button>
                                                 </div>
                                             @else
                                                 <span class="badge bg-success">
@@ -196,72 +206,71 @@
     }
 </style>
 
+<!-- Modal Tolak Verifikasi -->
+<div class="modal fade" id="rejectModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tolak Verifikasi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="rejectForm" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Alasan Penolakan</label>
+                        <textarea class="form-control" 
+                                 name="alasan_penolakan" 
+                                 rows="3" 
+                                 required
+                                 placeholder="Masukkan alasan penolakan..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="ri-close-line me-1"></i>
+                        Tolak Verifikasi
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @push('scripts')
 <script>
+    function showRejectModal(userId) {
+        const modal = new bootstrap.Modal(document.getElementById('rejectModal'));
+        const form = document.getElementById('rejectForm');
+        form.action = "{{ url('admin/verify-user') }}/" + userId + "/reject";
+        modal.show();
+    }
+
     // Notifikasi Sweet Alert
-    @if(session('success'))
+    @if(session('verifySuccess'))
         Swal.fire({
             icon: 'success',
-            title: 'Berhasil!',
-            text: "{{ session('success') }}",
-            showConfirmButton: false,
-            timer: 1500,
-            toast: true,
-            position: 'top-end'
-        }).then(() => {
-            // Debug: Log URL WhatsApp
-            console.log("WhatsApp URL:", "{{ session('whatsapp_url') }}");
-            
-            // Redirect ke WhatsApp setelah notifikasi sukses
-            @if(session('whatsapp_url'))
-                window.open("{{ session('whatsapp_url') }}", "_blank");
-            @endif
+            title: '{{ session('verifySuccess')['title'] }}',
+            text: '{{ session('verifySuccess')['message'] }}',
+            showCancelButton: false,
+            confirmButtonText: 'Kirim Pesan WhatsApp',
+            allowOutsideClick: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '{{ session('verifySuccess')['waUrl'] }}';
+            }
         });
     @endif
 
-    // Konfirmasi verifikasi
-    document.querySelectorAll('.verify-form').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-           
-            Swal.fire({
-                title: 'Konfirmasi Verifikasi',
-                text: 'Apakah Anda yakin ingin memverifikasi mahasiswa ini?',
-                icon: 'question',
-                showCancelButton: true,  
-                confirmButtonColor: '#28a745',
-                cancelButtonColor: '#dc3545',
-                confirmButtonText: '<i class="ri-check-line me-1"></i> Ya, Verifikasi!',
-                cancelButtonText: '<i class="ri-close-line me-1"></i> Batal',
-                reverseButtons: true,
-                focusCancel: true,
-                customClass: {
-                    confirmButton: 'btn btn-success',
-                    cancelButton: 'btn btn-danger',
-                    actions: 'swal-actions'
-                },
-                buttonsStyling: false
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Tampilkan loading state
-                    Swal.fire({
-                        title: 'Memproses...',
-                        text: 'Mohon tunggu sebentar',
-                        allowOutsideClick: false,
-                        allowEscapeKey: false,
-                        showConfirmButton: false,
-                        didOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
-                    
-                    // Submit form
-                    this.submit();
-                }
-            });
+    @if(session('error'))
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: '{{ session('error') }}',
+            confirmButtonText: 'OK'
         });
-    });
+    @endif
 </script>
 @endpush
 @endsection
