@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class RegisterController extends Controller
 {
@@ -26,25 +27,46 @@ class RegisterController extends Controller
             'surat_bakesbangpol' => 'required|file|mimes:pdf|max:2048',
         ]);
 
-        $suratKampusPath = $request->file('surat_kampus')->store('surat_kampus', 'public');
-        $suratBakesbangpolPath = $request->file('surat_bakesbangpol')->store('surat_bakesbangpol', 'public');
+        try {
+            // Upload surat kampus
+            $suratKampusPath = $request->file('surat_kampus')->store('surat_kampus', 'public');
+            
+            // Upload surat bakesbangpol
+            $suratBakesbangpolPath = $request->file('surat_bakesbangpol')->store('surat_bakesbangpol', 'public');
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'no_tlpn' => $request->no_tlpn,
-            'asal_kampus' => $request->asal_kampus,
-            'surat_kampus' => $suratKampusPath,
-            'surat_bakesbangpol' => $suratBakesbangpolPath,
-            'is_verified' => false,
-        ]);
+            // Buat user baru
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'no_tlpn' => $request->no_tlpn,
+                'asal_kampus' => $request->asal_kampus,
+                'surat_kampus' => $suratKampusPath,
+                'surat_bakesbangpol' => $suratBakesbangpolPath,
+                'is_verified' => false,
+            ]);
 
-        $user->assignRole('mahasiswa');
+            // Assign role mahasiswa
+            $user->assignRole('mahasiswa');
 
-        session(['user' => $user->name]);
+            session(['user' => $user->name]);
 
-        return redirect()->route('register.success');
+            return redirect()->route('register.success')
+                ->with('success', 'Pendaftaran berhasil! Silahkan tunggu verifikasi dan penentuan divisi dari admin.');
+
+        } catch (\Exception $e) {
+            // Hapus file yang sudah diupload jika terjadi error
+            if (isset($suratKampusPath)) {
+                Storage::disk('public')->delete($suratKampusPath);
+            }
+            if (isset($suratBakesbangpolPath)) {
+                Storage::disk('public')->delete($suratBakesbangpolPath);
+            }
+
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Terjadi kesalahan saat mendaftar. Silahkan coba lagi.']);
+        }
     }
 
     public function success()

@@ -10,13 +10,14 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <!-- Remix Icon -->
         <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-        
+
         <!-- SweetAlert2 -->
         <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
         <!-- Google Fonts -->
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet">
 
         <style>
             :root {
@@ -75,7 +76,12 @@
             }
 
             /* Custom Typography */
-            h1, h2, h3, h4, h5, h6 {
+            h1,
+            h2,
+            h3,
+            h4,
+            h5,
+            h6 {
                 font-weight: 600;
                 line-height: 1.3;
             }
@@ -115,104 +121,132 @@
                     <i class="ri-building-4-line text-primary me-2"></i>
                     <span>SIPEKA</span>
                 </a>
-                
-                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarNav">
                     <i class="ri-menu-line"></i>
                 </button>
 
                 @auth
                     <div class="collapse navbar-collapse" id="navbarNav">
                         <ul class="navbar-nav me-auto">
-                            @role('admin')
+                            @role('super_admin')
                                 <li class="nav-item">
-                                    <a class="nav-link {{ Request::is('admin/dashboard*') ? 'active' : '' }}" 
-                                       href="{{ route('admin.dashboard') }}">
+                                    <a class="nav-link {{ Request::is('super-admin/dashboard*') ? 'active' : '' }}"
+                                        href="{{ route('super_admin.dashboard') }}">
                                         <i class="ri-dashboard-line me-1"></i>
                                         Dashboard
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link {{ Request::is('admin/verify*') ? 'active' : '' }}" 
-                                       href="{{ route('admin.verify.users') }}">
+                                    <a class="nav-link {{ Request::is('super-admin/verify-users*') ? 'active' : '' }}"
+                                        href="{{ route('super_admin.verify.users') }}">
                                         <i class="ri-user-follow-line me-1"></i>
-                                        Verifikasi User
+                                        Verifikasi Mahasiswa
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link {{ Request::is('admin/absens*') ? 'active' : '' }}" 
-                                       href="{{ route('admin.absens.index') }}">
-                                        <i class="ri-calendar-check-line me-1"></i>
-                                        Verifikasi Absensi
+                                    <a class="nav-link {{ Request::is('super-admin/divisi*') ? 'active' : '' }}"
+                                        href="{{ route('super_admin.divisi.index') }}">
+                                        <i class="ri-building-line me-1"></i>
+                                        Manajemen Divisi
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link {{ Request::is('admin/suratselesai*') ? 'active' : '' }}" 
-                                       href="{{ route('admin.suratselesai.index') }}">
-                                        <i class="ri-file-paper-2-line me-1"></i>
-                                        Surat Selesai
+                                    <a class="nav-link {{ Request::is('super-admin/admin-divisi*') ? 'active' : '' }}"
+                                        href="{{ route('super_admin.admin-divisi.index') }}">
+                                        <i class="ri-user-settings-line me-1"></i>
+                                        Admin Divisi
                                     </a>
                                 </li>
-                            @else
+                            @endrole
+
+                            @role('admin_divisi')
                                 <li class="nav-item">
-                                    <a class="nav-link {{ Request::is('dashboard*') ? 'active' : '' }}" 
-                                       href="{{ route('dashboard') }}">
+                                    <a class="nav-link {{ Request::is('admin-divisi/dashboard*') ? 'active' : '' }}"
+                                        href="{{ route('admin_divisi.dashboard') }}">
                                         <i class="ri-dashboard-line me-1"></i>
                                         Dashboard
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link {{ Request::is('absens*') ? 'active' : '' }}" 
-                                       href="{{ route('absens.index') }}">
+                                    <a class="nav-link {{ Request::is('admin-divisi/mahasiswa*') ? 'active' : '' }}"
+                                        href="{{ route('admin_divisi.mahasiswa') }}">
+                                        <i class="ri-user-line me-1"></i>
+                                        Mahasiswa
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ Request::is('admin-divisi/absensi*') ? 'active' : '' }}"
+                                        href="{{ route('admin_divisi.absensi') }}">
                                         <i class="ri-calendar-check-line me-1"></i>
                                         Absensi
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link {{ Request::is('laporans*') ? 'active' : '' }}" 
-                                       href="{{ route('laporans.index') }}">
+                                    <a class="nav-link {{ Request::is('admin-divisi/laporan*') ? 'active' : '' }}"
+                                        href="{{ route('admin_divisi.laporan') }}">
                                         <i class="ri-file-list-3-line me-1"></i>
                                         Laporan
                                     </a>
                                 </li>
-                                @if(Auth::user()->suratBalasan)
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle {{ Request::is('surat*') ? 'active' : '' }}" 
-                                       href="#" 
-                                       id="suratDropdown" 
-                                       role="button" 
-                                       data-bs-toggle="dropdown">
-                                        <i class="ri-file-paper-2-line me-1"></i>
-                                        Surat Balasan
+                            @endrole
+
+                            @role('mahasiswa')
+                                <li class="nav-item">
+                                    <a class="nav-link {{ Request::is('dashboard*') ? 'active' : '' }}"
+                                        href="{{ route('dashboard') }}">
+                                        <i class="ri-dashboard-line me-1"></i>
+                                        Dashboard
                                     </a>
-                                    <ul class="dropdown-menu border-0 shadow-sm">
-                                        <li>
-                                            <a class="dropdown-item" 
-                                               href="{{ Storage::url(Auth::user()->suratBalasan->surat) }}" 
-                                               target="_blank">
-                                                <i class="ri-eye-line me-2"></i>
-                                                Preview Surat
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" 
-                                               href="{{ Storage::url(Auth::user()->suratBalasan->surat) }}" 
-                                               download="Surat_Balasan_{{ Auth::user()->name }}.pdf">
-                                                <i class="ri-download-line me-2"></i>
-                                                Download Surat
-                                            </a>
-                                        </li>
-                                    </ul>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ Request::is('absens*') ? 'active' : '' }}"
+                                        href="{{ route('absens.index') }}">
+                                        <i class="ri-calendar-check-line me-1"></i>
+                                        Absensi
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ Request::is('laporans*') ? 'active' : '' }}"
+                                        href="{{ route('laporans.index') }}">
+                                        <i class="ri-file-list-3-line me-1"></i>
+                                        Laporan
+                                    </a>
+                                </li>
+                                @if (Auth::user()->suratBalasan)
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle {{ Request::is('surat*') ? 'active' : '' }}"
+                                            href="#" id="suratDropdown" role="button" data-bs-toggle="dropdown">
+                                            <i class="ri-file-paper-2-line me-1"></i>
+                                            Surat Balasan
+                                        </a>
+                                        <ul class="dropdown-menu border-0 shadow-sm">
+                                            <li>
+                                                <a class="dropdown-item"
+                                                    href="{{ Storage::url(Auth::user()->suratBalasan->surat) }}"
+                                                    target="_blank">
+                                                    <i class="ri-eye-line me-2"></i>
+                                                    Preview Surat
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item"
+                                                    href="{{ Storage::url(Auth::user()->suratBalasan->surat) }}"
+                                                    download="Surat_Balasan_{{ Auth::user()->name }}.pdf">
+                                                    <i class="ri-download-line me-2"></i>
+                                                    Download Surat
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
                                 @endif
                             @endrole
                         </ul>
 
                         <div class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" 
-                               href="#" 
-                               id="navbarDropdown" 
-                               role="button" 
-                               data-bs-toggle="dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#"
+                                id="navbarDropdown" role="button" data-bs-toggle="dropdown">
                                 <div class="avatar-sm bg-light rounded-circle">
                                     <i class="ri-user-line text-primary"></i>
                                 </div>

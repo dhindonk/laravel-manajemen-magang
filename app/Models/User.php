@@ -20,6 +20,7 @@ class User extends Authenticatable
         'surat_bakesbangpol',
         'is_verified',
         'password',
+        'divisi_id',
     ];
 
     protected $hidden = [
@@ -46,5 +47,10 @@ class User extends Authenticatable
     public function laporans()
     {
         return $this->hasMany(Laporan::class);
+    }
+
+    public function divisi()
+    {
+        return $this->belongsTo(Divisi::class);
     }
 }

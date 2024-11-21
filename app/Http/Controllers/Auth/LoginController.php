@@ -26,24 +26,23 @@ class LoginController extends Controller
             
             $user = Auth::user();
             
-            Log::info('User roles:', [
-                'user_id' => $user->id,
-                'roles' => $user->roles->pluck('name')->toArray()
-            ]);
+            if ($user->roles->contains('name', 'super_admin')) {
+                return redirect()->route('super_admin.dashboard')
+                    ->with('success', 'Selamat datang, Super Admin!');
+            }
             
-            if ($user->roles->contains('name', 'admin')) {
-                return redirect()->intended('/admin/dashboard')
-                    ->with('success', 'Selamat datang, Admin!');
+            if ($user->roles->contains('name', 'admin_divisi')) {
+                return redirect()->route('admin_divisi.dashboard')
+                    ->with('success', 'Selamat datang, Admin Divisi!');
             }
             
             if ($user->roles->contains('name', 'mahasiswa')) {
                 if (!$user->is_verified) {
                     Auth::logout();
                     return redirect()->route('login')
-                        ->with('error', 'Akun Anda belum diverifikasi. Mohon tunggu verifikasi dari admin.');
+                        ->with('error', 'Akun Anda belum diverifikasi.');
                 }
-                
-                return redirect()->intended('/dashboard')
+                return redirect()->route('dashboard')
                     ->with('success', 'Selamat datang, ' . $user->name);
             }
         }
