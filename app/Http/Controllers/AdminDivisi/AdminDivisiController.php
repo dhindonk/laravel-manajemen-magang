@@ -99,13 +99,31 @@ class AdminDivisiController extends Controller
                      })
                      ->findOrFail($id);
 
+        // Validasi request untuk surat selesai
+        request()->validate([
+            'file_surat' => 'required|file|mimes:pdf|max:2048',
+            'tanggal_surat' => 'required|date',
+            'keterangan' => 'nullable|string',
+        ]);
+
+        // Upload surat selesai
+        $suratPath = request()->file('file_surat')->store('surat_selesai_files', 'public');
+
+        // Buat surat selesai
+        $laporan->suratSelesai()->create([
+            'file_surat' => $suratPath,
+            'tanggal_surat' => request()->tanggal_surat,
+            'keterangan' => request()->keterangan,
+        ]);
+
+        // Update status laporan
         $laporan->update([
             'is_verified' => true,
             'status' => 'diterima'
         ]);
 
         return redirect()->back()
-            ->with('success', 'Laporan berhasil diverifikasi');
+            ->with('success', 'Laporan berhasil diverifikasi dan surat selesai telah dibuat');
     }
 
     public function rejectLaporan(Request $request, $id)

@@ -16,9 +16,7 @@ class SuratSelesai extends Model
         'keterangan'
     ];
 
-    protected $casts = [
-        'tanggal_surat' => 'date'
-    ];
+    protected $dates = ['tanggal_surat'];
 
     public function laporan()
     {

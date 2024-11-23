@@ -97,17 +97,12 @@
                                         <td class="px-3">
                                             @if($laporan->status == 'pending')
                                                 <div class="btn-group">
-                                                    <form action="{{ route('admin_divisi.laporan.verify', $laporan->id) }}" 
-                                                          method="POST"
-                                                          class="d-inline">
-                                                        @csrf
-                                                        <button type="submit" 
-                                                                class="btn btn-success btn-sm"
-                                                                onclick="return confirm('Apakah Anda yakin ingin menerima laporan ini?')">
-                                                            <i class="ri-check-line me-1"></i>
-                                                            Terima
-                                                        </button>
-                                                    </form>
+                                                    <button type="button" 
+                                                            class="btn btn-success btn-sm"
+                                                            onclick="showVerifyModal('{{ $laporan->id }}')">
+                                                        <i class="ri-check-line me-1"></i>
+                                                        Verifikasi
+                                                    </button>
                                                     <button type="button" 
                                                             class="btn btn-danger btn-sm"
                                                             onclick="showRejectModal('{{ $laporan->id }}')">
@@ -167,6 +162,55 @@
     </div>
 </div>
 
+<!-- Di dalam modal verifikasi laporan -->
+<div class="modal fade" id="verifyModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Verifikasi Laporan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="verifyForm" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">File Surat Selesai</label>
+                        <input type="file" 
+                               class="form-control @error('file_surat') is-invalid @enderror" 
+                               name="file_surat"
+                               accept=".pdf"
+                               required>
+                        <small class="text-muted">Format: PDF, Maksimal 2MB</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tanggal Surat</label>
+                        <input type="date" 
+                               class="form-control @error('tanggal_surat') is-invalid @enderror"
+                               name="tanggal_surat"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Keterangan (Opsional)</label>
+                        <textarea class="form-control" 
+                                 name="keterangan" 
+                                 rows="3"
+                                 placeholder="Masukkan keterangan tambahan..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="ri-check-line me-1"></i>
+                        Verifikasi & Upload Surat
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <style>
     .calendar-icon {
         width: 36px;
@@ -195,6 +239,13 @@
         const modal = new bootstrap.Modal(document.getElementById('rejectModal'));
         const form = document.getElementById('rejectForm');
         form.action = "{{ url('admin-divisi/laporan') }}/" + id + "/reject";
+        modal.show();
+    }
+
+    function showVerifyModal(id) {
+        const modal = new bootstrap.Modal(document.getElementById('verifyModal'));
+        const form = document.getElementById('verifyForm');
+        form.action = "{{ url('admin-divisi/laporan') }}/" + id + "/verify";
         modal.show();
     }
 
